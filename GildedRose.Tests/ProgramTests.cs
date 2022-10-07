@@ -172,6 +172,37 @@ public class ProgramTests
         program.Items[0].Name.Should().Be("Backstage passes to a TAFKAL80ETC concert");
         program.Items[0].SellIn.Should().Be(-1);
         program.Items[0].Quality.Should().Be(0);
+
+ [Fact]      
+    public void QualityCanNotBeLessThan0()
+    {
+        // Arrange
+        var program = new Program();
+        program.Items = new List<Item>();
+        var item = new Item { Name = "Rusty Axe", SellIn = 5, Quality = 0 };
+        program.Items.Add(item);
+        
+        program.UpdateQuality();
+        
+        program.Items[0].Name.Should().Be("Rusty Axe");
+        program.Items[0].SellIn.Should().Be(4);
+        program.Items[0].Quality.Should().Be(0);
+    }
+
+    [Fact]
+    public void WhenSellInHasPassedQualityDegradesTwiceAsFast()
+    {
+        // Arrange
+        var program = new Program();
+        program.Items = new List<Item>();
+        var item = new Item { Name = "Blades of Destiny", SellIn = 0, Quality = 4 };
+        program.Items.Add(item);
+        
+        program.UpdateQuality();
+        
+        program.Items[0].Name.Should().Be("Blades of Destiny");
+        program.Items[0].SellIn.Should().Be(-1);
+        program.Items[0].Quality.Should().Be(2);
     }
 
     /*
