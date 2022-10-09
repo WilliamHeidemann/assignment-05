@@ -90,8 +90,10 @@ public class Program
                     break;
 
                 case ItemType.Legendary:
-                    item.SellIn++;
-                    break;
+                    return;
+                
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             item.SellIn--;
@@ -109,11 +111,7 @@ public class Program
 
     private static void UpdateGeneric(Item item)
     {
-        if (item.Quality <= 0)
-        {
-            return;
-        }
-
+        if (item.Quality <= 0) return;
         item.Quality--;
         if (item.SellIn <= 0) item.Quality--;
     }
@@ -134,15 +132,10 @@ public class Program
 
     private static void UpdateBackStagePass(Item item)
     {
-        if (item.SellIn <= 0)
-        {
-            item.Quality = 0;
-            return;
-        }
-
         item.Quality++;
         if (item.SellIn <= 10) item.Quality++;
         if (item.SellIn <= 5) item.Quality++;
+        if (item.SellIn <= 0) item.Quality = 0;
     }
 }
 
