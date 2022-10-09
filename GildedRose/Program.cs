@@ -89,8 +89,11 @@ public class Program
                     break;
                 
                 case ItemType.Legendary:
+                    item.SellIn++;
                     break;
             }
+
+            item.SellIn--;
         }
     }
 
@@ -107,12 +110,10 @@ public class Program
     {
         if (item.Quality <= 0)
         {
-            item.SellIn--;
             return;
         }
         item.Quality--;
         if (item.SellIn <= 0) item.Quality--;
-        item.SellIn--;
     }
 
     private static void UpdateBrie(Item item)
@@ -120,7 +121,6 @@ public class Program
         item.Quality++;
         if (item.SellIn <= 0) item.Quality++;
         item.Quality = Math.Min(item.Quality, 50);
-        item.SellIn--;
     }
     
     private static void UpdateConjured(Item item)
@@ -128,7 +128,6 @@ public class Program
         if(item.Quality <= 0) return;
         item.Quality -= 2;
         if (item.SellIn <= 0) item.Quality -= 2;
-        item.SellIn--;
     }
 
     private static void UpdateBackStagePass(Item item)
@@ -136,14 +135,12 @@ public class Program
         if (item.SellIn <= 0)
         {
             item.Quality = 0;
-            item.SellIn--;
             return;
         }
 
         item.Quality++;
         if (item.SellIn <= 10) item.Quality++;
         if (item.SellIn <=  5) item.Quality++;
-        item.SellIn--;
     }
 }
 
