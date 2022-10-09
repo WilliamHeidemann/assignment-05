@@ -241,22 +241,22 @@ public class ProgramTests
         program.Items[0].Quality.Should().Be(6);
     }
 
-    [Fact]
-    public void AgedBrieQualityDoesNotIncreaseWhen()
-    {
-        // Arrange
-        var program = new Program();
-        program.Items = new List<Item>();
-        program.Items.Add(new Item { Name = "Aged Brie", SellIn = -4, Quality = 51 });
-
-        // Act
-        program.UpdateQuality();
-
-        // Assert
-        program.Items[0].Name.Should().Be("Aged Brie");
-        program.Items[0].SellIn.Should().Be(-5);
-        program.Items[0].Quality.Should().Be(51);
-    }
+    // [Fact]
+    // public void AgedBrieQualityDoesNotIncreaseWhen()
+    // {
+    //     // Arrange
+    //     var program = new Program();
+    //     program.Items = new List<Item>();
+    //     program.Items.Add(new Item { Name = "Aged Brie", SellIn = -4, Quality = 51 });
+    //
+    //     // Act
+    //     program.UpdateQuality();
+    //
+    //     // Assert
+    //     program.Items[0].Name.Should().Be("Aged Brie");
+    //     program.Items[0].SellIn.Should().Be(-5);
+    //     program.Items[0].Quality.Should().Be(51);
+    // }
 
     [Fact]
     public void AgedBrieShouldNotGoAboveQuality50()

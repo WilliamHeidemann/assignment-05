@@ -56,82 +56,95 @@ public class Program
 
     }
 
+    private enum ItemType
+    {
+        Generic,
+        Brie,
+        Conjured,
+        BackStagePass,
+        Legendary,
+    }
+    
     public void UpdateQuality()
     {
-        for (var i = 0; i < Items.Count; i++)
+        foreach (var item in Items)
         {
-            if (Items[i].Name != "Aged Brie" && Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
+            var type = GetItemType(item.Name);
+            switch (type)
             {
-                if (Items[i].Quality > 0)
-                {
-                    if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                    {
-                        Items[i].Quality = Items[i].Quality - 1;
-                    }
-                }
-            }
-            else
-            {
-                if (Items[i].Quality < 50)
-                {
-                    Items[i].Quality = Items[i].Quality + 1;
-
-                    if (Items[i].Name == "Backstage passes to a TAFKAL80ETC concert")
-                    {
-                        if (Items[i].SellIn < 11)
-                        {
-                            if (Items[i].Quality < 50)
-                            {
-                                Items[i].Quality = Items[i].Quality + 1;
-                            }
-                        }
-
-                        if (Items[i].SellIn < 6)
-                        {
-                            if (Items[i].Quality < 50)
-                            {
-                                Items[i].Quality = Items[i].Quality + 1;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-            {
-                Items[i].SellIn = Items[i].SellIn - 1;
-            }
-
-            if (Items[i].SellIn < 0)
-            {
-                if (Items[i].Name != "Aged Brie")
-                {
-                    if (Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
-                    {
-                        if (Items[i].Quality > 0)
-                        {
-                            if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                            {
-                                Items[i].Quality = Items[i].Quality - 1;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Items[i].Quality = Items[i].Quality - Items[i].Quality;
-                    }
-                }
-                else
-                {
-                    if (Items[i].Quality < 50)
-                    {
-                        Items[i].Quality = Items[i].Quality + 1;
-                    }
-                }
+                case ItemType.Generic:
+                    UpdateGeneric(item);
+                    break;
+                
+                case ItemType.Brie:
+                    UpdateBrie(item);
+                    break;
+                
+                case ItemType.Conjured:
+                    UpdateConjured(item);
+                    break;
+                
+                case ItemType.BackStagePass:
+                    UpdateBackStagePass(item);
+                    break;
+                
+                case ItemType.Legendary:
+                    break;
             }
         }
     }
 
+    private static ItemType GetItemType(string itemName)
+    {
+        if (itemName.ToLower().Contains("brie")) return ItemType.Brie;
+        if (itemName.ToLower().Contains("conjured")) return ItemType.Conjured;
+        if (itemName.Contains("Backstage pass")) return ItemType.BackStagePass;
+        if (itemName.Equals("Sulfuras, Hand of Ragnaros")) return ItemType.Legendary;
+        return ItemType.Generic;
+    }
+
+    private static void UpdateGeneric(Item item)
+    {
+        if (item.Quality <= 0)
+        {
+            item.SellIn--;
+            return;
+        }
+        item.Quality--;
+        if (item.SellIn <= 0) item.Quality--;
+        item.SellIn--;
+    }
+
+    private static void UpdateBrie(Item item)
+    {
+        item.Quality++;
+        if (item.SellIn <= 0) item.Quality++;
+        item.Quality = Math.Min(item.Quality, 50);
+        item.SellIn--;
+    }
+    
+    private static void UpdateConjured(Item item)
+    {
+        if(item.Quality <= 0) return;
+        item.Quality -= 2;
+        if (item.SellIn <= 0) item.Quality -= 2;
+        item.SellIn--;
+    }
+
+    private static void UpdateBackStagePass(Item item)
+    {
+        if (item.SellIn <= 0)
+        {
+            item.Quality = 0;
+            item.SellIn--;
+            return;
+        }
+
+        item.Quality++;
+        if (item.SellIn <= 10) item.Quality++;
+        if (item.SellIn <=  5) item.Quality++;
+        item.SellIn--;
+    }
 }
 
 public class Item
