@@ -38,7 +38,6 @@ public class Program
                     SellIn = 5,
                     Quality = 49
                 },
-                // this conjured item does not work properly yet
                 new Item { Name = "Conjured Mana Cake", SellIn = 3, Quality = 6 }
             }
         };
@@ -68,36 +67,35 @@ public class Program
 
     public void UpdateQuality()
     {
-        foreach (var item in Items)
+        Parallel.ForEach(Items, Update);
+    }
+
+    private void Update(Item item)
+    {
+        var type = GetItemType(item.Name);
+        switch (type)
         {
-            var type = GetItemType(item.Name);
-            switch (type)
-            {
-                case ItemType.Generic:
-                    UpdateGeneric(item);
-                    break;
+            case ItemType.Generic:
+                UpdateGeneric(item);
+                break;
 
-                case ItemType.Brie:
-                    UpdateBrie(item);
-                    break;
+            case ItemType.Brie:
+                UpdateBrie(item);
+                break;
 
-                case ItemType.Conjured:
-                    UpdateConjured(item);
-                    break;
+            case ItemType.Conjured:
+                UpdateConjured(item);
+                break;
 
-                case ItemType.BackStagePass:
-                    UpdateBackStagePass(item);
-                    break;
+            case ItemType.BackStagePass:
+                UpdateBackStagePass(item);
+                break;
 
-                case ItemType.Legendary:
-                    return;
-                
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            item.SellIn--;
+            case ItemType.Legendary:
+                return;
         }
+
+        item.SellIn--;
     }
 
     private static ItemType GetItemType(string itemName)
