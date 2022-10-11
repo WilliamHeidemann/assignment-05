@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace GildedRose;
+﻿namespace GildedRose;
 public class Program
 {
     public IList<Item> Items = null!;
@@ -58,14 +55,62 @@ public class Program
 
     public void UpdateQuality()
     {
-        IList<UpdateableItem> updateables = ItemParser.ParseItems(Items).ToList();
-        
-        foreach(var updateable in updateables) 
-        {
-            updateable.UpdateQuality();
-        }
-
-        Items = ItemParser.ParseUpdateables(updateables).ToList();
+        Parallel.ForEach(Items, Update);
     }
-}
 
+    private void Update(Item item)
+    {
+        var updateQualityOfItem = GetItemType(item.Name);
+        updateQualityOfItem(item);
+        CheckBoundsOfItemQuality(item);
+        item.SellIn--;
+    }
+
+    private void UpdateGeneric(Item item)
+    {
+        item.Quality--;
+        if (item.SellIn <= 0) item.Quality--;
+    }
+
+    private void UpdateBrie(Item item)
+    {
+        item.Quality++;
+        if (item.SellIn <= 0) item.Quality++;
+    }
+
+    private void UpdateConjured(Item item)
+    {
+        item.Quality -= 2;
+        if (item.SellIn <= 0) item.Quality -= 2;
+    }
+
+    private void UpdateBackStagePass(Item item)
+    {
+        item.Quality++;
+        if (item.SellIn <= 10) item.Quality++;
+        if (item.SellIn <= 5) item.Quality++;
+        if (item.SellIn <= 0) item.Quality = 0;
+    }
+
+    private void UpdateLegendary(Item item) 
+    {
+
+    }
+
+    public void CheckBoundsOfItemQuality(Item item) 
+    {
+        if (item.Quality < 0) item.Quality = 0;
+        else if (item.Quality > 50) item.Quality = 50;
+    }
+
+    private UpdateItemQuality GetItemType(string itemName)
+    {
+        if (ItemNameDatabase.CHEESES.Contains(itemName)) return new UpdateItemQuality(UpdateBrie);
+        if (ItemNameDatabase.CONJURED.Contains(itemName)) return new UpdateItemQuality(UpdateConjured);
+        if (ItemNameDatabase.BACKSTAGEPASSES.Contains(itemName)) return new UpdateItemQuality(UpdateBackStagePass);
+        if (ItemNameDatabase.LEGENDARIES.Contains(itemName)) return new UpdateItemQuality(UpdateLegendary);
+        return new UpdateItemQuality(UpdateGeneric);
+    }
+
+    public delegate void UpdateItemQuality(Item item);
+}
