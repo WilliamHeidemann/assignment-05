@@ -76,7 +76,7 @@ public class Program
         if (item.SellIn <= 0) item.Quality--;
     }
 
-    private void UpdateBrie(Item item)
+    private void UpdateCheese(Item item)
     {
         item.Quality++;
         if (item.SellIn <= 0) item.Quality++;
@@ -105,7 +105,7 @@ public class Program
 
     private UpdateItemQuality GetUpdateMethod(string itemName)
     {
-        if (ItemNameDatabase.CHEESES.Contains(itemName)) return new UpdateItemQuality(UpdateBrie);
+        if (ItemNameDatabase.CHEESES.Contains(itemName)) return new UpdateItemQuality(UpdateCheese);
         if (ItemNameDatabase.CONJURED.Contains(itemName)) return new UpdateItemQuality(UpdateConjured);
         if (ItemNameDatabase.BACKSTAGEPASSES.Contains(itemName)) return new UpdateItemQuality(UpdateBackStagePass);
         return new UpdateItemQuality(UpdateGeneric);
