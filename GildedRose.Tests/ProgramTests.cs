@@ -1,7 +1,4 @@
 namespace GildedRose.Tests;
-
-
-
 public class ProgramTests
 {
     [Fact]
@@ -245,7 +242,7 @@ public class ProgramTests
         // Arrange
         var program = new Program();
         program.Items = new List<Item>();
-        program.Items.Add(new Item { Name = "Aged Brie", SellIn = -4, Quality = 51 });
+        program.Items.Add(new Item { Name = "Aged Brie", SellIn = -4, Quality = 50 });
 
         // Act
         program.UpdateQuality();
