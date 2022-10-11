@@ -10,7 +10,13 @@ public class UpdateableItem : Item, IUpdateable
         {
             Quality -= 2;
         }
-        if (Quality < 0) Quality = 0;
         SellIn--;
+        CheckBounds();
+    }
+
+    public void CheckBounds() 
+    {
+        if (Quality < 0) Quality = 0;
+        else if (Quality > 50) Quality = 50;
     }
 }

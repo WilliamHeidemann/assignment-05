@@ -30,8 +30,8 @@ public class Cheese : UpdateableItem
                 Quality += 2;
             }
         }
-        if (Quality > 50) Quality = 50;
         SellIn--;
+        CheckBounds();
     }
 }
 
@@ -49,7 +49,7 @@ public class ConjuredItem : UpdateableItem
         }
         if (Quality < 0) Quality = 0;
         SellIn--;
-        
+        CheckBounds();
     }
 }
 
@@ -73,8 +73,7 @@ public class BackstagePass : UpdateableItem
         {
             Quality = 0;
         }
-        if(Quality > 50) Quality = 50;
-        else if (Quality < 0) Quality = 0;
         SellIn--;
+        CheckBounds();
     }
 }
