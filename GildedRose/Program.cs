@@ -2,6 +2,7 @@
 public class Program
 {
     public IList<Item> Items = null!;
+    public delegate void UpdateItemQuality(Item item);
     static void Main(string[] args)
     {
         System.Console.WriteLine("OMGHAI!");
@@ -60,11 +61,14 @@ public class Program
 
     private void Update(Item item)
     {
-        var updateQualityOfItem = GetItemType(item.Name);
+        if(IsLegendaryItem(item.Name)) return; 
+        var updateQualityOfItem = GetUpdateMethod(item.Name);
         updateQualityOfItem(item);
         CheckBoundsOfItemQuality(item);
         item.SellIn--;
     }
+
+    private bool IsLegendaryItem(string itemName) => ItemNameDatabase.LEGENDARIES.Contains(itemName);
 
     private void UpdateGeneric(Item item)
     {
@@ -77,6 +81,7 @@ public class Program
         item.Quality++;
         if (item.SellIn <= 0) item.Quality++;
     }
+
 
     private void UpdateConjured(Item item)
     {
@@ -92,25 +97,17 @@ public class Program
         if (item.SellIn <= 0) item.Quality = 0;
     }
 
-    private void UpdateLegendary(Item item) 
-    {
-
-    }
-
     public void CheckBoundsOfItemQuality(Item item) 
     {
         if (item.Quality < 0) item.Quality = 0;
         else if (item.Quality > 50) item.Quality = 50;
     }
 
-    private UpdateItemQuality GetItemType(string itemName)
+    private UpdateItemQuality GetUpdateMethod(string itemName)
     {
         if (ItemNameDatabase.CHEESES.Contains(itemName)) return new UpdateItemQuality(UpdateBrie);
         if (ItemNameDatabase.CONJURED.Contains(itemName)) return new UpdateItemQuality(UpdateConjured);
         if (ItemNameDatabase.BACKSTAGEPASSES.Contains(itemName)) return new UpdateItemQuality(UpdateBackStagePass);
-        if (ItemNameDatabase.LEGENDARIES.Contains(itemName)) return new UpdateItemQuality(UpdateLegendary);
         return new UpdateItemQuality(UpdateGeneric);
     }
-
-    public delegate void UpdateItemQuality(Item item);
 }

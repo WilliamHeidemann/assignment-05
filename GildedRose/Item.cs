@@ -7,11 +7,3 @@ public class Item
 
     public int Quality { get; set; }
 }
-
-public enum ItemType {
-    Generic,
-    Cheese,
-    Conjured,
-    BackStagePass,
-    Legendary,
-}
