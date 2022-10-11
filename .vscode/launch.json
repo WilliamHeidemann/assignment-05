@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/GildedRose/bin/Debug/net5.0/GildedRose.dll",
+            "program": "${workspaceFolder}/GildedRose/bin/Debug/net6.0/GildedRose.dll",
             "args": [],
             "cwd": "${workspaceFolder}/GildedRose",
             "console": "internalConsole",

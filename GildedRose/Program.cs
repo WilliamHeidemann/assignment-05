@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace GildedRose;
+﻿namespace GildedRose;
 public class Program
 {
-    public IList<Item> Items;
+    public IList<Item> Items = null!;
+    public delegate void UpdateItemQuality(Item item);
     static void Main(string[] args)
     {
         System.Console.WriteLine("OMGHAI!");
 
         var app = new Program()
-                        {
-                            Items = new List<Item>
+        {
+            Items = new List<Item>
                                         {
             new Item { Name = "+5 Dexterity Vest", SellIn = 10, Quality = 20 },
             new Item { Name = "Aged Brie", SellIn = 2, Quality = 0 },
@@ -38,9 +36,9 @@ public class Program
             },
             // this conjured item does not work properly yet
             new Item { Name = "Conjured Mana Cake", SellIn = 3, Quality = 6 }
-                                        }
+            }
 
-                        };
+        };
 
         for (var i = 0; i < 31; i++)
         {
@@ -58,87 +56,58 @@ public class Program
 
     public void UpdateQuality()
     {
-        for (var i = 0; i < Items.Count; i++)
-        {
-            if (Items[i].Name != "Aged Brie" && Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
-            {
-                if (Items[i].Quality > 0)
-                {
-                    if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                    {
-                        Items[i].Quality = Items[i].Quality - 1;
-                    }
-                }
-            }
-            else
-            {
-                if (Items[i].Quality < 50)
-                {
-                    Items[i].Quality = Items[i].Quality + 1;
-
-                    if (Items[i].Name == "Backstage passes to a TAFKAL80ETC concert")
-                    {
-                        if (Items[i].SellIn < 11)
-                        {
-                            if (Items[i].Quality < 50)
-                            {
-                                Items[i].Quality = Items[i].Quality + 1;
-                            }
-                        }
-
-                        if (Items[i].SellIn < 6)
-                        {
-                            if (Items[i].Quality < 50)
-                            {
-                                Items[i].Quality = Items[i].Quality + 1;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-            {
-                Items[i].SellIn = Items[i].SellIn - 1;
-            }
-
-            if (Items[i].SellIn < 0)
-            {
-                if (Items[i].Name != "Aged Brie")
-                {
-                    if (Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
-                    {
-                        if (Items[i].Quality > 0)
-                        {
-                            if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                            {
-                                Items[i].Quality = Items[i].Quality - 1;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Items[i].Quality = Items[i].Quality - Items[i].Quality;
-                    }
-                }
-                else
-                {
-                    if (Items[i].Quality < 50)
-                    {
-                        Items[i].Quality = Items[i].Quality + 1;
-                    }
-                }
-            }
-        }
+        Parallel.ForEach(Items, Update);
     }
 
-}
+    private void Update(Item item)
+    {
+        if(IsLegendaryItem(item.Name)) return; 
+        var updateQualityOfItem = GetUpdateMethod(item.Name);
+        updateQualityOfItem(item);
+        CheckBoundsOfItemQuality(item);
+        item.SellIn--;
+    }
 
-public class Item
-{
-    public string Name { get; set; }
+    private bool IsLegendaryItem(string itemName) => ItemNameDatabase.LEGENDARIES.Contains(itemName);
 
-    public int SellIn { get; set; }
+    private void UpdateGeneric(Item item)
+    {
+        item.Quality--;
+        if (item.SellIn <= 0) item.Quality--;
+    }
 
-    public int Quality { get; set; }
+    private void UpdateCheese(Item item)
+    {
+        item.Quality++;
+        if (item.SellIn <= 0) item.Quality++;
+    }
+
+
+    private void UpdateConjured(Item item)
+    {
+        item.Quality -= 2;
+        if (item.SellIn <= 0) item.Quality -= 2;
+    }
+
+    private void UpdateBackStagePass(Item item)
+    {
+        item.Quality++;
+        if (item.SellIn <= 10) item.Quality++;
+        if (item.SellIn <= 5) item.Quality++;
+        if (item.SellIn <= 0) item.Quality = 0;
+    }
+
+    public void CheckBoundsOfItemQuality(Item item) 
+    {
+        if (item.Quality < 0) item.Quality = 0;
+        else if (item.Quality > 50) item.Quality = 50;
+    }
+
+    private UpdateItemQuality GetUpdateMethod(string itemName)
+    {
+        if (ItemNameDatabase.CHEESES.Contains(itemName)) return new UpdateItemQuality(UpdateCheese);
+        if (ItemNameDatabase.CONJURED.Contains(itemName)) return new UpdateItemQuality(UpdateConjured);
+        if (ItemNameDatabase.BACKSTAGEPASSES.Contains(itemName)) return new UpdateItemQuality(UpdateBackStagePass);
+        return new UpdateItemQuality(UpdateGeneric);
+    }
 }
